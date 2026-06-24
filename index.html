@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>育兒當下幫手｜教養策略小幫手</title>
+<style>
+  :root {
+    --bg: #f6f4ef;
+    --card: #ffffff;
+    --ink: #2f2a26;
+    --ink-soft: #6b635b;
+    --line: #e7e1d8;
+    --accent: #6b9a8f;
+    --accent-deep: #4f7d72;
+    --accent-soft: #e6f0ec;
+    --warm: #e8a87c;
+    --warm-soft: #fbeee3;
+    --danger: #c5705d;
+    --shadow: 0 6px 24px rgba(60, 50, 40, 0.08);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+  header {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+    color: #fff;
+    padding: 28px 20px 22px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 6px; font-size: 1.5rem; letter-spacing: 1px; }
+  header p { margin: 0; opacity: 0.92; font-size: 0.92rem; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
+  .tabs {
+    display: flex; gap: 8px; justify-content: center;
+    margin: -22px auto 24px; max-width: 460px;
+    background: var(--card); padding: 6px; border-radius: 999px;
+    box-shadow: var(--shadow); position: relative; z-index: 2;
+  }
+  .tab {
+    flex: 1; border: none; background: transparent; cursor: pointer;
+    padding: 10px 14px; border-radius: 999px; font-size: 0.95rem;
+    color: var(--ink-soft); font-weight: 600; transition: all .2s;
+    font-family: inherit;
+  }
+  .tab.active { background: var(--accent); color: #fff; }
+  .panel { display: none; animation: fade .25s ease; }
+  .panel.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform:none;} }
+
+  .box {
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 22px; margin-bottom: 18px;
+  }
+  label { display: block; font-weight: 600; margin: 0 0 6px; font-size: 0.92rem; }
+  .hint { color: var(--ink-soft); font-size: 0.82rem; font-weight: 400; margin-left: 6px;}
+  textarea, input, select {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--line);
+    border-radius: 12px; font-size: 1rem; font-family: inherit; background: #fff;
+    color: var(--ink); transition: border .15s;
+  }
+  textarea:focus, input:focus, select:focus { outline: none; border-color: var(--accent); }
+  textarea { min-height: 96px; resize: vertical; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+  .row > div { flex: 1; min-width: 150px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .chip {
+    border: 1.5px solid var(--line); background: #fff; color: var(--ink-soft);
+    padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 0.86rem;
+    font-family: inherit; transition: all .15s;
+  }
+  .chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); font-weight: 600; }
+  .btn {
+    border: none; cursor: pointer; font-family: inherit; font-weight: 600;
+    padding: 13px 22px; border-radius: 12px; font-size: 1rem; transition: all .15s;
+  }
+  .btn-main { background: var(--accent); color: #fff; width: 100%; margin-top: 18px; }
+  .btn-main:hover { background: var(--accent-deep); }
+  .btn-sm { padding: 8px 14px; font-size: 0.85rem; border-radius: 10px; }
+  .btn-ghost { background: var(--accent-soft); color: var(--accent-deep); }
+  .btn-warm { background: var(--warm-soft); color: #b56f43; }
+  .btn-danger { background: #f7e4df; color: var(--danger); }
+  .btn-line { background: #fff; border: 1.5px solid var(--line); color: var(--ink-soft); }
+
+  /* result cards */
+  #results { margin-top: 6px; }
+  .empty { text-align: center; color: var(--ink-soft); padding: 30px 10px; }
+  .empty .big { font-size: 2.2rem; margin-bottom: 8px; }
+  .scard {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 20px 22px; margin-bottom: 16px; border-left: 5px solid var(--accent);
+  }
+  .scard h3 { margin: 0 0 4px; font-size: 1.18rem; }
+  .scard .meta { font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 12px; display:flex; flex-wrap:wrap; gap:6px;}
+  .tag { background: var(--bg); border-radius: 6px; padding: 2px 8px; }
+  .tag.src { background: var(--warm-soft); color: #b56f43; }
+  .tag.doc { background: #e2eef0; color: #2f6f7a; font-weight: 600; }
+  .tag.gen { background: #eef0e9; color: #5f7050; font-weight: 600; }
+  .doc-name { background: #d7ebef; color: #1f5b66; border-radius: 4px; padding: 0 4px; font-weight: 700; }
+  .srclegend { font-size: 0.76rem; color: var(--ink-soft); background: var(--card); border: 1px dashed var(--line); border-radius: 10px; padding: 8px 12px; margin-bottom: 14px; line-height: 1.6; }
+  .sec { margin-top: 12px; }
+  .sec .h { font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .sec.brain .h { color: var(--accent-deep); }
+  .sec.do .h { color: #4f7d72; }
+  .sec.say .h { color: #b56f43; }
+  .sec.avoid .h { color: var(--danger); }
+  .sec ul { margin: 4px 0 0; padding-left: 20px; }
+  .sec li { margin-bottom: 3px; }
+  .say-quote {
+    background: var(--warm-soft); border-radius: 10px; padding: 8px 12px;
+    margin: 4px 0; font-style: italic; color: #8a5a36;
+  }
+  .matchbar { font-size: 0.74rem; color: var(--ink-soft); margin-top: 10px; }
+
+  /* admin */
+  .kb-item {
+    border: 1.5px solid var(--line); border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+  }
+  .kb-item .info h4 { margin: 0 0 3px; font-size: 1rem; }
+  .kb-item .info small { color: var(--ink-soft); }
+  .kb-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .field { margin-bottom: 14px; }
+  .modal-bg {
+    display: none; position: fixed; inset: 0; background: rgba(40,34,28,.45);
+    z-index: 50; align-items: flex-start; justify-content: center; padding: 30px 14px; overflow-y: auto;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: #fff; border-radius: var(--radius); max-width: 640px; width: 100%;
+    padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  }
+  .modal h2 { margin: 0 0 16px; }
+  .modal-foot { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-foot .btn { flex: 1; }
+  .disclaimer {
+    background: var(--warm-soft); border-radius: 12px; padding: 12px 16px;
+    font-size: 0.82rem; color: #8a5a36; margin-top: 8px;
+  }
+  .count { color: var(--ink-soft); font-size: 0.82rem; }
+  .center { text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🌿 育兒當下幫手</h1>
+  <p>有衝突、卡關的時候，寫下狀況，找回方向</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="ask">家長求助</button>
+  <button class="tab" data-tab="admin">管理知識庫</button>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== ASK PANEL ===== -->
+  <div class="panel active" id="panel-ask">
+    <div class="box">
+      <label>現在發生什麼事？<span class="hint">越具體越好，例如：孩子不肯關平板，我一說就大哭尖叫</span></label>
+      <textarea id="situation" placeholder="把當下的狀況、孩子的反應、你的感受寫下來…"></textarea>
+
+      <div class="row">
+        <div>
+          <label>情境類型 <span class="hint">可不選</span></label>
+          <div class="chips" id="catChips"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>孩子年齡</label>
+          <select id="age">
+            <option value="">不指定</option>
+            <option value="1">0–2 歲</option>
+            <option value="4">3–5 歲</option>
+            <option value="8">6–9 歲</option>
+            <option value="11">10–12 歲</option>
+            <option value="15">13 歲以上</option>
+          </select>
+        </div>
+        <div>
+          <label>你現在的狀態</label>
+          <select id="mood">
+            <option value="">不指定</option>
+            <option>還算冷靜，想找方法</option>
+            <option>有點煩躁</option>
+            <option>快爆炸了 / 很挫折</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-main" id="goBtn">找出當下可以做的事</button>
+      <div class="disclaimer">⚠️ 這裡提供的是一般性的教養參考，不能取代專業醫療、心理或兒科診斷。若孩子有持續的情緒、發展或安全疑慮，請諮詢醫師或心理師。</div>
+    </div>
+
+    <div id="results">
+      <div class="empty">
+        <div class="big">🫶</div>
+        <div>寫下狀況後，這裡會列出最貼近的幾個策略。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN PANEL ===== -->
+  <div class="panel" id="panel-admin">
+    <div class="box">
+      <div id="dirtyBanner" style="display:none; align-items:center; gap:10px; background:var(--warm-soft); color:#8a5a36; padding:10px 14px; border-radius:12px; margin-bottom:14px; font-size:0.86rem;">
+        <span style="flex:1">⚠️ 有尚未存回檔案的修改。按「下載 kb.js」存檔，再把它放回資料夾蓋掉舊的。</span>
+        <button class="btn btn-sm btn-warm" id="saveFileBtnTop">💾 下載 kb.js</button>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-sm btn-ghost" id="addBtn">＋ 新增策略</button>
+        <button class="btn btn-sm btn-line" id="saveFileBtn">💾 下載 kb.js（存回檔案）</button>
+        <button class="btn btn-sm btn-line" id="reloadBtn">🔄 重新讀取檔案</button>
+      </div>
+      <div class="count" id="kbCount"></div>
+      <div id="kbList"></div>
+    </div>
+    <div class="disclaimer">💡 知識庫的真正內容存在資料夾裡的 <b>kb.js</b> 檔案。在這裡編輯後，按「💾 下載 kb.js」把檔案放回資料夾蓋掉舊的即可。整個資料夾複製到別台電腦，知識庫就跟著走。也可以直接把 kb.js 交給 Claude 幫你改。</div>
+  </div>
+</div>
+
+<!-- ===== EDIT MODAL ===== -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2 id="modalTitle">新增策略</h2>
+    <input type="hidden" id="editId" />
+    <div class="field">
+      <label>策略名稱 *</label>
+      <input id="f_title" placeholder="例如：先連結情緒，再處理行為" />
+    </div>
+    <div class="row" style="margin-top:0">
+      <div class="field" style="flex:1">
+        <label>來源 <span class="hint">書名 / 醫師 / 框架</span></label>
+        <input id="f_source" placeholder="例如：《全腦教養法》Dan Siegel" />
+      </div>
+      <div class="field" style="flex:1">
+        <label>適用年齡</label>
+        <select id="f_age">
+          <option value="all">不限</option>
+          <option value="0-2">0–2 歲</option>
+          <option value="3-5">3–5 歲</option>
+          <option value="6-9">6–9 歲</option>
+          <option value="10-12">10–12 歲</option>
+          <option value="13+">13 歲以上</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>情境分類 <span class="hint">點選可複選</span></label>
+      <div class="chips" id="f_catChips"></div>
+      <input id="f_newCat" placeholder="找不到？輸入新分類後按 Enter" style="margin-top:8px" />
+    </div>
+    <div class="field">
+      <label>關鍵字 <span class="hint">用、或逗號分隔，用來比對家長輸入</span></label>
+      <input id="f_keywords" placeholder="大哭、尖叫、關平板、3C、不聽話" />
+    </div>
+    <div class="field">
+      <label>背後的原理 <span class="hint">腦科學 / 心理學，每行一點</span></label>
+      <textarea id="f_brain" placeholder="孩子情緒上來時，掌管理智的前額葉暫時離線，講道理聽不進去…"></textarea>
+    </div>
+    <div class="field">
+      <label>當下可以做的步驟 <span class="hint">每行一個步驟</span></label>
+      <textarea id="f_do" placeholder="蹲下到孩子的高度&#10;先說出他的感受&#10;等情緒緩和再談規則"></textarea>
+    </div>
+    <div class="field">
+      <label>可以這樣說 <span class="hint">範例句，每行一句</span></label>
+      <textarea id="f_say" placeholder="你很想再玩，被打斷很生氣對不對？"></textarea>
+    </div>
+    <div class="field">
+      <label>盡量避免 <span class="hint">每行一點</span></label>
+      <textarea id="f_avoid" placeholder="在情緒高點講大道理&#10;用威脅或羞辱"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-line" id="cancelBtn">取消</button>
+      <button class="btn btn-main" style="margin-top:0" id="saveBtn">儲存</button>
+    </div>
+  </div>
+</div>
+
+<script src="kb.js"></script>
+<script>
+/* ---------- 後備預設（萬一 kb.js 沒讀到，才會用到這份） ---------- */
+const DEFAULT_KB = [
+  {
+    id: "k1",
+    title: "先連結情緒，再處理行為",
+    source: "《全腦教養法》Dan Siegel & Tina Bryson",
+    age: "all",
+    cats: ["情緒爆發", "大哭崩潰"],
+    keywords: ["大哭","尖叫","崩潰","鬧脾氣","情緒","抓狂","哭鬧","發脾氣"],
+    brain: ["情緒上來時，孩子的『上層腦』(前額葉/理智)會暫時離線，由『下層腦』(情緒/生存)主導。","這時講道理、講規則大腦接收不到。先讓情緒被接住，理智才會重新上線。"],
+    do: ["蹲下到孩子視線高度，放慢自己的呼吸與語速","先描述你看到的感受，幫他把情緒說出來","用肢體安撫(摟肩、靠近)取代說教","等他比較緩和了，再簡短談發生的事與界線"],
+    say: ["你好難過喔，這件事讓你很生氣對不對？","我在這裡，我陪你。","等你準備好，我們再一起想辦法。"],
+    avoid: ["在情緒最高點時講大道理","說『這有什麼好哭的』否定他的感受","用威脅或處罰讓他『閉嘴』"]
+  },
+  {
+    id: "k2",
+    title: "情緒共調節：大人先穩，孩子才會穩",
+    source: "Mona Delahooke《行為,只是冰山一角》/ 多重迷走神經理論",
+    age: "all",
+    cats: ["情緒爆發", "親子衝突"],
+    keywords: ["失控","我也快爆炸","煩躁","忍不住","吼","生氣","冷靜","抓狂"],
+    brain: ["孩子的神經系統會『讀』大人的狀態。你緊繃，他更緊繃；你穩定，他才借得到你的穩定。","這叫共調節——孩子要先靠大人一起調節，長大才慢慢學會自我調節。"],
+    do: ["先照顧自己：深呼吸三次、必要時說『我需要一分鐘』","放軟肩膀、降低音量，把臉部表情放柔","把目標從『讓他停止』改成『陪他度過』","事後再回頭談，不在風暴中教育"],
+    say: ["我們都先深呼吸一下。","媽媽/爸爸先冷靜一下，等一下回來陪你。","我們是同一隊的，一起想辦法。"],
+    avoid: ["用更大的音量壓過孩子","在自己也失控時做出處罰決定","把孩子的情緒當成針對你的攻擊"]
+  },
+  {
+    id: "k3",
+    title: "合作式問題解決：一起找辦法，而不是硬碰硬",
+    source: "Ross Greene《家有易爆兒》(CPS / Plan B)",
+    age: "6-9",
+    cats: ["反覆衝突", "頂嘴對立", "寫功課"],
+    keywords: ["頂嘴","對立","不聽","講不聽","反抗","拒絕","每次都","老是","功課","唱反調"],
+    brain: ["孩子不是『不想』乖，常常是『缺乏某些技能』(彈性、挫折忍受、解決問題)。","硬壓只會升高對立。把孩子當解題夥伴，反而能找到雙方都能接受的方案。"],
+    do: ["1.同理:先了解他的角度與困難(『我注意到…怎麼了嗎？』)","2.表達:說出你的擔心(而非命令)","3.邀請:『我們一起想個對你我都行的辦法好嗎？』","讓孩子先提方案,你再一起調整"],
+    say: ["我注意到你最近寫功課特別卡，發生什麼事了嗎？","我擔心太晚睡你明天會很累。","你有沒有什麼點子，可以兩邊都不為難？"],
+    avoid: ["只用命令與最後通牒","急著否定孩子提的方案","把每次衝突都變成輸贏之爭"]
+  },
+  {
+    id: "k4",
+    title: "溫和而堅定地設界線",
+    source: "正向教養 Positive Discipline (Jane Nelsen)",
+    age: "3-5",
+    cats: ["界線規矩", "唱反調"],
+    keywords: ["界線","規矩","不肯","耍賴","討價還價","堅持","規則","管教"],
+    brain: ["孩子需要清楚、可預期的界線來感到安全。","界線可以堅定，但語氣可以溫和。和善與堅定並存，孩子學到的是規則,而不是恐懼。"],
+    do: ["先同理感受，再守住界線(同理不等於讓步)","給有限的選擇,讓他保有掌控感","說一次清楚的規則,然後用行動溫和執行","事先約定好,而不是當下才臨時加規則"],
+    say: ["我知道你還想玩(同理)，時間到了要收起來囉(界線)。","你想自己收，還是我們一起收？(選擇)","規則是一樣的，但我會陪你一起做到。"],
+    avoid: ["一直重複嘮叨卻沒有行動","因為哭鬧就破例(會教出更大的哭鬧)","用羞辱或翻舊帳的方式講規則"]
+  },
+  {
+    id: "k5",
+    title: "3C / 平板時間的衝突",
+    source: "AAP 美國兒科醫學會螢幕使用建議 + 過渡預告",
+    age: "6-9",
+    cats: ["3C螢幕", "界線規矩"],
+    keywords: ["平板","手機","3C","電視","遊戲","關掉","螢幕","youtube","遊戲時間","不肯關"],
+    brain: ["螢幕內容會持續給大腦刺激與獎賞,『突然中斷』對孩子很難受,容易引爆情緒。","事先預告與儀式感,能讓大腦有準備、過渡更順。"],
+    do: ["開始前就講好時間與『結束後要做什麼』","結束前 5 分鐘、1 分鐘各預告一次","用計時器當『壞人』,規則是計時器訂的","結束後安排一個有吸引力的活動銜接"],
+    say: ["再 5 分鐘計時器會響,響了我們就去準備點心喔。","計時器說時間到囉,我們明天再玩。","我知道很想再看,被打斷很不舒服,我懂。"],
+    avoid: ["毫無預警直接沒收","自己邊滑手機邊要求孩子放下","把 3C 當唯一的獎賞或處罰籌碼"]
+  },
+  {
+    id: "k6",
+    title: "手足爭吵：當裁判不如當教練",
+    source: "《手足之間》Faber & Mazlish",
+    age: "6-9",
+    cats: ["手足衝突"],
+    keywords: ["手足","兄弟","姊妹","搶","公平","告狀","打架","誰先","互相","弟弟","妹妹","哥哥","姊姊"],
+    brain: ["急著當裁判判對錯,容易讓孩子覺得『要爭寵就要告狀』,反而強化衝突。","把解決權還給孩子,他們才學得到協商與同理。"],
+    do: ["先描述問題,不急著判誰對誰錯","承認雙方的情緒與需求","表達對他們的信任:相信你們能想出辦法","只在有安全危險時才介入分開"],
+    say: ["我看到一個玩具,兩個人都想玩,這很難喔。","你很想要,他也很想要。","我相信你們可以一起想個公平的辦法,需要我幫忙再叫我。"],
+    avoid: ["習慣性偏袒某一方或要大的讓","幫他們貼標籤(愛計較、愛欺負)","在公開場合比較兩個孩子"]
+  },
+  {
+    id: "k7",
+    title: "睡前拖延與抗拒",
+    source: "兒童睡眠衛生 + 過渡儀式",
+    age: "3-5",
+    cats: ["睡眠就寢"],
+    keywords: ["睡覺","睡前","不睡","拖","賴床","就寢","上床","熬夜","睡不著","哄睡"],
+    brain: ["孩子白天活動後仍處於興奮狀態,需要『降速』的過程才睡得著。","固定、可預期的睡前儀式會給大腦『要睡了』的訊號。"],
+    do: ["固定的睡前流程(洗澡→刷牙→故事→關燈)順序不變","睡前 1 小時調暗燈光、收起螢幕","給有限選擇(先刷牙還是先換睡衣)","把白天的擔心在睡前留一點時間聊掉"],
+    say: ["我們的睡前三步驟開始囉。","你想聽哪一本故事？","明天還有好玩的事在等你,我們先充電。"],
+    avoid: ["睡前才開始劇烈玩耍或看螢幕","每天流程都不一樣","把上床當成處罰('再吵就去睡')"]
+  },
+  {
+    id: "k8",
+    title: "用『描述』取代命令與責罵",
+    source: "《怎麼說,孩子會聽》Faber & Mazlish",
+    age: "all",
+    cats: ["日常溝通", "唱反調"],
+    keywords: ["不聽","講不聽","唸","催","拖拖拉拉","講很多次","講道理","溝通","回話"],
+    brain: ["孩子聽到指責容易進入防衛,大腦關上合作的門。","『描述事實』讓孩子自己接收到該做什麼,保留了他的自尊與主動性。"],
+    do: ["描述你看到的(而不是評價他這個人)","用一個詞或一句話提醒,取代長篇說教","說出你的感受,用『我』開頭","把該做的事寫下來/畫出來,讓清單當提醒"],
+    say: ["鞋子在地上喔。(描述) ✕『你怎麼又亂丟』","水快滿出來了!(一句話)","地上濕濕的我會擔心有人滑倒。(我訊息)"],
+    avoid: ["貼標籤('你就是懶''你很故意')","一次唸一長串","翻舊帳"]
+  }
+];
+
+/* ---------- 狀態與儲存 ----------
+   知識庫的「真正來源」是資料夾裡的 kb.js 檔案。
+   網頁每次打開都重新讀 kb.js。
+   在網頁裡的編輯是暫存，要按「💾 下載 kb.js」存回檔案才會永久保留。 */
+let KB = load();
+let dirty = false;
+
+function load() {
+  if (Array.isArray(window.KB_DATA)) return JSON.parse(JSON.stringify(window.KB_DATA));
+  return JSON.parse(JSON.stringify(DEFAULT_KB));
+}
+function save() { dirty = true; updateDirtyBanner(); }   // 不寫瀏覽器；改用下載 kb.js 存回檔案
+
+function updateDirtyBanner() {
+  const b = document.getElementById("dirtyBanner");
+  if (b) b.style.display = dirty ? "flex" : "none";
+}
+
+/* 所有分類(預設+自訂) */
+function allCats() {
+  const s = new Set();
+  KB.forEach(k => (k.cats||[]).forEach(c => s.add(c)));
+  return [...s];
+}
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll(".tab").forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    document.getElementById("panel-"+t.dataset.tab).classList.add("active");
+    if (t.dataset.tab === "admin") renderKB();
+  };
+});
+
+/* ---------- 求助頁:分類 chips ---------- */
+let selectedCats = new Set();
+function renderCatChips() {
+  const box = document.getElementById("catChips");
+  box.innerHTML = "";
+  allCats().forEach(c => {
+    const b = document.createElement("button");
+    b.className = "chip" + (selectedCats.has(c) ? " on" : "");
+    b.textContent = c;
+    b.onclick = () => {
+      if (selectedCats.has(c)) selectedCats.delete(c); else selectedCats.add(c);
+      renderCatChips();
+    };
+    box.appendChild(b);
+  });
+}
+
+/* ---------- 比對邏輯 ---------- */
+function ageToRange(v) {
+  const n = parseInt(v,10);
+  if (isNaN(n)) return null;
+  if (n<=2) return "0-2";
+  if (n<=5) return "3-5";
+  if (n<=9) return "6-9";
+  if (n<=12) return "10-12";
+  return "13+";
+}
+function ageMatch(cardAge, userRange) {
+  if (!userRange || cardAge==="all") return true;
+  return cardAge === userRange;
+}
+
+function search() {
+  const text = document.getElementById("situation").value.trim();
+  const userRange = ageToRange(document.getElementById("age").value);
+  const cats = [...selectedCats];
+
+  const scored = KB.map(card => {
+    let score = 0; let hits = [];
+    // 關鍵字比對
+    (card.keywords||[]).forEach(kw => {
+      if (kw && text.includes(kw)) { score += 3; hits.push(kw); }
+    });
+    // 分類比對
+    cats.forEach(c => { if ((card.cats||[]).includes(c)) score += 4; });
+    // 年齡比對
+    if (userRange && card.age===ageToRange(document.getElementById("age").value)) score += 2;
+    if (!ageMatch(card.age, userRange)) score -= 1.5;
+    return { card, score, hits };
+  });
+
+  let res = scored.filter(s => s.score > 0).sort((a,b)=>b.score-a.score);
+
+  // 若完全沒比中:給通用情緒共調節的卡片當保底
+  let fallback = false;
+  if (res.length === 0) {
+    fallback = true;
+    res = scored.filter(s => ["k1","k2","k8"].includes(s.card.id)).map(s=>({...s, hits:[]}));
+  }
+  renderResults(res.slice(0,4), fallback, text);
+}
+
+function esc(s){ return (s||"").replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+function hl(s){ return s.replace(/(黃瑽寧醫師|馬大元醫師|黃瑽寧|馬大元)/g, '<span class="doc-name">$1</span>'); }
+function listHTML(arr){ return "<ul>"+ (arr||[]).map(x=>"<li>"+hl(esc(x))+"</li>").join("") +"</ul>"; }
+function cardSrcType(card){ const b=JSON.stringify(card); return (b.indexOf('黃瑽寧')>=0||b.indexOf('馬大元')>=0)?'doc':'general'; }
+
+function renderResults(items, fallback, text) {
+  const box = document.getElementById("results");
+  if (items.length === 0) {
+    box.innerHTML = '<div class="empty"><div class="big">🤔</div><div>還沒有比對到合適的策略。試著多寫一點細節，或到「管理知識庫」新增相關策略。</div></div>';
+    return;
+  }
+  let html = "";
+  html += '<div class="srclegend">🩺 <b>含醫師觀點</b>：這張卡有出自你 NotebookLM（黃瑽寧／馬大元）的內容，內文標<span class="doc-name">醫師名</span>處即是。　📚 <b>通用教養科學</b>：公認教養框架整理。</div>';
+  if (fallback) {
+    html += '<div class="disclaimer">沒有完全對應的關鍵字，先給你幾個幾乎萬用的方向。你也可以多描述一點，或在知識庫補上這類情境。</div>';
+  }
+  items.forEach(({card, hits}) => {
+    html += '<div class="scard">';
+    html += '<h3>'+esc(card.title)+'</h3>';
+    html += '<div class="meta">';
+    (card.cats||[]).forEach(c=> html += '<span class="tag">'+esc(c)+'</span>');
+    if (card.source) html += '<span class="tag src">📖 '+esc(card.source)+'</span>';
+    html += (cardSrcType(card)==='doc') ? '<span class="tag doc">🩺 含醫師觀點</span>' : '<span class="tag gen">📚 通用教養科學</span>';
+    html += '</div>';
+    if (card.brain && card.brain.length) html += '<div class="sec brain"><div class="h">🧠 為什麼會這樣</div>'+listHTML(card.brain)+'</div>';
+    if (card.do && card.do.length) html += '<div class="sec do"><div class="h">✅ 當下可以做</div>'+listHTML(card.do)+'</div>';
+    if (card.say && card.say.length) {
+      html += '<div class="sec say"><div class="h">💬 可以這樣說</div>';
+      card.say.forEach(s=> html += '<div class="say-quote">「'+hl(esc(s))+'」</div>');
+      html += '</div>';
+    }
+    if (card.avoid && card.avoid.length) html += '<div class="sec avoid"><div class="h">⛔ 盡量避免</div>'+listHTML(card.avoid)+'</div>';
+    if (hits && hits.length) html += '<div class="matchbar">比對到：'+hits.map(esc).join("、")+'</div>';
+    html += '</div>';
+  });
+  box.innerHTML = html;
+  box.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+document.getElementById("goBtn").onclick = search;
+
+/* ---------- 管理頁:列表 ---------- */
+function renderKB() {
+  const list = document.getElementById("kbList");
+  document.getElementById("kbCount").textContent = "目前共 "+KB.length+" 個策略";
+  list.innerHTML = "";
+  KB.forEach(card => {
+    const div = document.createElement("div");
+    div.className = "kb-item";
+    div.innerHTML =
+      '<div class="info"><h4>'+ (cardSrcType(card)==='doc'?'🩺 ':'📚 ') +esc(card.title)+'</h4>'+
+      '<small>'+ (card.cats||[]).map(esc).join("、") + (card.source? '　·　'+esc(card.source):'') +'</small></div>'+
+      '<div class="kb-actions">'+
+        '<button class="btn btn-sm btn-ghost" data-edit="'+card.id+'">編輯</button>'+
+        '<button class="btn btn-sm btn-danger" data-del="'+card.id+'">刪除</button>'+
+      '</div>';
+    list.appendChild(div);
+  });
+  list.querySelectorAll("[data-edit]").forEach(b=> b.onclick=()=>openEdit(b.dataset.edit));
+  list.querySelectorAll("[data-del]").forEach(b=> b.onclick=()=>{
+    if (confirm("確定要刪除這個策略嗎？")) {
+      KB = KB.filter(k=>k.id!==b.dataset.del); save(); renderKB(); renderCatChips();
+    }
+  });
+}
+
+/* ---------- 編輯 Modal ---------- */
+let modalCats = new Set();
+function renderModalCats() {
+  const box = document.getElementById("f_catChips");
+  box.innerHTML = "";
+  const union = new Set([...allCats(), ...modalCats]);
+  [...union].forEach(c => {
+    const b = document.createElement("button");
+    b.className = "chip" + (modalCats.has(c) ? " on" : "");
+    b.textContent = c;
+    b.onclick = ()=> { modalCats.has(c)?modalCats.delete(c):modalCats.add(c); renderModalCats(); };
+    box.appendChild(b);
+  });
+}
+document.getElementById("f_newCat").addEventListener("keydown", e=>{
+  if (e.key==="Enter") {
+    e.preventDefault();
+    const v = e.target.value.trim();
+    if (v) { modalCats.add(v); e.target.value=""; renderModalCats(); }
+  }
+});
+
+function openEdit(id) {
+  const card = KB.find(k=>k.id===id);
+  document.getElementById("modalTitle").textContent = card? "編輯策略" : "新增策略";
+  document.getElementById("editId").value = card? card.id : "";
+  document.getElementById("f_title").value = card? card.title : "";
+  document.getElementById("f_source").value = card? (card.source||"") : "";
+  document.getElementById("f_age").value = card? (card.age||"all") : "all";
+  document.getElementById("f_keywords").value = card? (card.keywords||[]).join("、") : "";
+  document.getElementById("f_brain").value = card? (card.brain||[]).join("\n") : "";
+  document.getElementById("f_do").value = card? (card.do||[]).join("\n") : "";
+  document.getElementById("f_say").value = card? (card.say||[]).join("\n") : "";
+  document.getElementById("f_avoid").value = card? (card.avoid||[]).join("\n") : "";
+  modalCats = new Set(card? (card.cats||[]) : []);
+  renderModalCats();
+  document.getElementById("modalBg").classList.add("show");
+}
+function closeModal(){ document.getElementById("modalBg").classList.remove("show"); }
+
+function splitLines(v){ return v.split("\n").map(s=>s.trim()).filter(Boolean); }
+function splitKeys(v){ return v.split(/[、,，\n]/).map(s=>s.trim()).filter(Boolean); }
+
+document.getElementById("saveBtn").onclick = () => {
+  const title = document.getElementById("f_title").value.trim();
+  if (!title) { alert("請至少填寫策略名稱"); return; }
+  const id = document.getElementById("editId").value || ("k"+Date.now());
+  const obj = {
+    id, title,
+    source: document.getElementById("f_source").value.trim(),
+    age: document.getElementById("f_age").value,
+    cats: [...modalCats],
+    keywords: splitKeys(document.getElementById("f_keywords").value),
+    brain: splitLines(document.getElementById("f_brain").value),
+    do: splitLines(document.getElementById("f_do").value),
+    say: splitLines(document.getElementById("f_say").value),
+    avoid: splitLines(document.getElementById("f_avoid").value)
+  };
+  const idx = KB.findIndex(k=>k.id===id);
+  if (idx>=0) KB[idx]=obj; else KB.push(obj);
+  save(); closeModal(); renderKB(); renderCatChips();
+};
+document.getElementById("addBtn").onclick = ()=> openEdit(null);
+document.getElementById("cancelBtn").onclick = closeModal;
+document.getElementById("modalBg").onclick = (e)=> { if (e.target.id==="modalBg") closeModal(); };
+
+/* ---------- 下載 kb.js（存回檔案）/ 重新讀取 ---------- */
+function downloadKB() {
+  const content =
+    "/* 育兒當下幫手 — 知識庫資料檔。可直接交給 Claude 修改，或自己照格式編輯。 */\n" +
+    "window.KB_DATA = " + JSON.stringify(KB, null, 2) + ";\n";
+  const blob = new Blob([content], {type:"text/javascript"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "kb.js"; a.click();
+  URL.revokeObjectURL(url);
+  dirty = false; updateDirtyBanner();
+  alert("已下載 kb.js。請把它從「下載」資料夾移到這個網頁所在的資料夾、蓋掉舊的 kb.js，更新就完成了。");
+}
+document.getElementById("saveFileBtn").onclick = downloadKB;
+document.getElementById("saveFileBtnTop").onclick = downloadKB;
+document.getElementById("reloadBtn").onclick = ()=>{
+  if (!dirty || confirm("重新讀取會捨棄尚未下載的修改，確定嗎？")) location.reload();
+};
+
+/* ---------- 初始 ---------- */
+renderCatChips();
+</script>
+</body>
+</html>
