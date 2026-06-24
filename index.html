@@ -516,7 +516,7 @@ function renderResults(items, fallback, text) {
   let html = "";
   html += '<div class="srclegend">🩺 <b>含醫師觀點</b>：這張卡有出自你 NotebookLM（黃瑽寧／馬大元）的內容，內文標<span class="doc-name">醫師名</span>處即是。　📚 <b>通用教養科學</b>：公認教養框架整理。</div>';
   if (fallback) {
-    html += '<div class="disclaimer">沒有完全對應的關鍵字，先給你幾個幾乎萬用的方向。你也可以多描述一點，或在知識庫補上這類情境。</div>';
+    html += '<div class="disclaimer">⚠️ <b>沒有比對到相符的策略</b>，以下是<b>通用</b>的情緒安定方向（非精準比對結果）。建議換個說法、多寫一點細節（例如：拖拖拉拉、不寫功課、挑食、3C、頂嘴…），或到「管理知識庫」新增這類情境的策略。</div>';
   }
   items.forEach(({card, hits}) => {
     html += '<div class="scard">';
