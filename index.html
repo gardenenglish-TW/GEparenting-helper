@@ -4,6 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>育兒當下幫手｜教養策略小幫手</title>
+<link rel="icon" type="image/png" href="logo.png" />
+<meta name="theme-color" content="#45c1d2" />
+<meta property="og:title" content="育兒當下幫手｜教養策略小幫手" />
+<meta property="og:description" content="有衝突、卡關的時候，寫下狀況，找回方向" />
+<meta property="og:image" content="logo.png" />
+<meta property="og:type" content="website" />
 <style>
   :root {
     --bg: #f6f4ef;
@@ -11,12 +17,14 @@
     --ink: #2f2a26;
     --ink-soft: #6b635b;
     --line: #e7e1d8;
-    --accent: #6b9a8f;
-    --accent-deep: #4f7d72;
-    --accent-soft: #e6f0ec;
-    --warm: #e8a87c;
-    --warm-soft: #fbeee3;
-    --danger: #c5705d;
+    --accent: #45c1d2;
+    --accent-deep: #2c9fb3;
+    --accent-soft: #e3f4f7;
+    --warm: #f4922e;
+    --warm-soft: #fdeede;
+    --leaf: #6cb23f;
+    --lime: #b2d235;
+    --danger: #d4694a;
     --shadow: 0 6px 24px rgba(60, 50, 40, 0.08);
     --radius: 16px;
   }
@@ -31,9 +39,16 @@
   header {
     background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
     color: #fff;
-    padding: 28px 20px 22px;
+    padding: 26px 20px 22px;
     text-align: center;
   }
+  .logo-badge {
+    width: 88px; height: 88px; border-radius: 50%;
+    background: #fff; margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+  }
+  .logo-badge img { height: 62px; width: auto; display: block; }
   header h1 { margin: 0 0 6px; font-size: 1.5rem; letter-spacing: 1px; }
   header p { margin: 0; opacity: 0.92; font-size: 0.92rem; }
   .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px 60px; }
@@ -150,7 +165,8 @@
 </head>
 <body>
 <header>
-  <h1>🌿 育兒當下幫手</h1>
+  <div class="logo-badge"><img src="logo.png" alt="Garden English" /></div>
+  <h1>育兒當下幫手</h1>
   <p>有衝突、卡關的時候，寫下狀況，找回方向</p>
 </header>
 
